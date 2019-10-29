@@ -107,6 +107,8 @@ class Attacker(ch.nn.Module):
                 center of the perturbation set, rather than :samp:`x`.
             use_best (bool) : If True, use the best (in terms of loss)
                 iterate of the attack process instead of just the last one.
+            channel_wide (bool) : If True, attack all channels with the same
+                perturbation - max of grad.
             return_image (bool) : If True (default), then return the adversarial
                 example as an image, otherwise return it in its parameterization
                 (for example, the Fourier coefficients if 'constraint' is
