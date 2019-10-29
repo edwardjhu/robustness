@@ -71,7 +71,8 @@ class Attacker(ch.nn.Module):
     def forward(self, x, target, *_, constraint, eps, step_size, iterations,
                 random_start=False, random_restarts=False, do_tqdm=False,
                 targeted=False, custom_loss=None, should_normalize=True,
-                orig_input=None, use_best=True, return_image=True, est_grad=None):
+                orig_input=None, use_best=True, return_image=True,
+                channel_wide=False, est_grad=None):
         """
         Implementation of forward (finds adversarial examples). Note that
         this does **not** perform inference and should not be called
@@ -203,7 +204,8 @@ class Attacker(ch.nn.Module):
                 with ch.no_grad():
                     args = [losses, best_loss, x, best_x]
                     best_loss, best_x = replace_best(*args) if use_best else (losses, x)
-
+                    if channel_wide:
+                        grad = grad.max(1, keepdim=True)[0].repeat(1, 4, 1, 1)
                     x = step.step(x, grad)
                     x = step.project(x)
                     if do_tqdm: iterator.set_description("Current loss: {l}".format(l=loss))
