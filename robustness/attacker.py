@@ -207,7 +207,9 @@ class Attacker(ch.nn.Module):
                     args = [losses, best_loss, x, best_x]
                     best_loss, best_x = replace_best(*args) if use_best else (losses, x)
                     if channel_wide:
-                        grad = grad.max(1, keepdim=True)[0].repeat(1, 4, 1, 1)
+                        max_grad = grad.max(1, keepdim=True)[0]
+                        min_grad = grad.min(1, keepdim=True)[0]
+                        grad = ch.where(max_grad.abs() > min_grad.abs(), max_grad, min_grad).repeat(1, 4, 1, 1)
                     x = step.step(x, grad)
                     x = step.project(x)
                     if do_tqdm: iterator.set_description("Current loss: {l}".format(l=loss))
